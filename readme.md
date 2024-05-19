@@ -10,6 +10,7 @@ You must write a program able to simulate a single headed and single tape Turing
 Important Notes:
 If you are using OCaml, you must turn-in a Makefile able to compile your code with ocamlopt and ocamlc. Also, your Makefile must detect any missing "libraries and/or tools" needed by your program and install them via OPAM. Your peer-evaluator is never required to install anything himself prior to the defense.
 
+![App Screenshot](https://raw.githubusercontent.com/oyumusak/ft_turing/main/turing.png)
 
 ## Installation (for now)
 This will change because the peer evaluator needs to have ocaml installed, therefore we will take the easy way out using docker to make it work anywhere.
@@ -32,11 +33,4 @@ make new
 dune exec _build/default/main.exe Json_Files/<any_file>.json "<any_input_like:> 111-1="
 ```
 
-
-
-
-    
-## Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
