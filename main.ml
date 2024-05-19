@@ -1,22 +1,30 @@
 open Yojson.Basic.Util
 
+
 type transition = {
-	name : string;
-	read : string;
-	to_state : string;
-	write : string;
-	action : string;
+	name : string;        (* Current state name *)
+	read : string;        (* Character read from the tape *)
+	to_state : string;    (* State to transition to *)
+	write : string;       (* Character to write on the tape *)
+	action : string;      (* Action to take: "LEFT" or "RIGHT" *)
 }
 
+
 type jsonHeaders = {
-	name : string;
-	alphabet : string array;
-	blank : string;
-	states : string array;
-	initial : string;
-	finals : string array;
-	transitions : transition array;
+	name : string;               		(* Name of the Turing machine *)
+	alphabet : string array;     		(* Alphabet of the Turing machine *)
+	blank : string;              		(* Blank symbol *)
+	states : string array;       		(* States of the Turing machine *)
+	initial : string;            		(* Initial state *)
+	finals : string array;       		(* Final (halting) states *)
+	transitions : transition array; (* Transition rules *)
 }
+
+
+(* Converts JSON representation of transitions into an array of transition records. 
+	Each record contains the name of the current state, the character read from the tape, 
+	the state to transition to, the character to write on the tape, and the action to take. 
+*)
 
 let initTransitions json =
 	json |> to_assoc |> List.map (fun (state, trans_list) ->
@@ -31,6 +39,9 @@ let initTransitions json =
 	)
 	) |> List.flatten |> Array.of_list
 
+
+(* Parses JSON content into a jsonHeaders record.*)
+
 let makeRecord jsonContent =
 	{
 		name = jsonContent |> member "name" |> to_string;
@@ -41,6 +52,7 @@ let makeRecord jsonContent =
 		finals = jsonContent |> member "finals" |> to_list |> List.map to_string |> Array.of_list;
 		transitions = initTransitions (jsonContent |> member "transitions");
 	}
+
 
 let readFile filePath =
 	let inputChannel = open_in filePath in
@@ -55,11 +67,13 @@ let readFile filePath =
 	close_in inputChannel;
 	content
 
+
 let checkArgs () =
 	let args = Sys.argv in
 	let argsLen = Array.length args in
 	if argsLen != 3 then begin print_string "You need 3 arg!\n"; exit 0 end;
 	args
+
 
 let findTransition (transitions : transition array) name (read : char) =
 	let rec loop i =
@@ -73,6 +87,9 @@ let findTransition (transitions : transition array) name (read : char) =
 	in
 	loop 0
 
+
+(* Initiates and runs the Turing machine algorithm. *)
+
 let startAlgo jsonContent (input : char array) =
 	let rec runAlgo jsonContent (input : char array) state index =
 		let transitions = jsonContent.transitions in
@@ -84,6 +101,9 @@ let startAlgo jsonContent (input : char array) =
 			runAlgo jsonContent input currTransition.to_state (if currTransition.action = "LEFT" then index - 1 else index + 1)
 	in
 	runAlgo jsonContent input jsonContent.initial 0
+
+
+(* Main Function *)
 
 let () =
 	let args = checkArgs () in

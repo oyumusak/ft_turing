@@ -30,7 +30,7 @@ opam info yojson
 ps: yojson is a module in ocaml for json parsing.
 ```bash
 make new
-dune exec _build/default/main.exe Json_Files/<any_file>.json "<any_input_like:> 111-1="
+dune exec ./main.exe path_to_json_file.json input_string
 ```
 
 
