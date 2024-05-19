@@ -19,6 +19,8 @@ After the virtual turing machine is completed write the json of these programs:
 4. A machine able to decide if the input is a word of the language 02n, for instance the words 00 or 0000, but not the words 000 or 00000. Before halting, write the result on the tape as a ’n’ or a ’y’ at the right of the rightmost character of the tape.
 5. A machine able to run the first machine of this list, the one computing an unary addition. The machine alphabet, states, transitions and input ARE the input of the machine you are writing, encoded as you see fit.
 
+Control for alphabet in the input.
+
 
 ## Installation (for now)
 This will change because the peer evaluator needs to have ocaml installed, therefore we will take the easy way out using docker to make it work anywhere.
