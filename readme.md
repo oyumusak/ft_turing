@@ -11,6 +11,14 @@ Important Notes:
 If you are using OCaml, you must turn-in a Makefile able to compile your code with ocamlopt and ocamlc. Also, your Makefile must detect any missing "libraries and/or tools" needed by your program and install them via OPAM. Your peer-evaluator is never required to install anything himself prior to the defense.
 
 ![App Screenshot](https://raw.githubusercontent.com/oyumusak/ft_turing/main/turing.png)
+## To-Do
+After the virtual turing machine is completed write the json of these programs:
+1. A machine able to compute an unary addition.
+2. A machine able to decide whether its input is a palindrome or not. Before halting, write the result on the tape as a ’n’ or a ’y’ at the right of the rightmost character of the tape.
+3. A machine able to decide if the input is a word of the language 0n1n, for instance the words 000111 or 0000011111. Before halting, write the result on the tape as a ’n’ or a ’y’ at the right of the rightmost character of the tape.
+4. A machine able to decide if the input is a word of the language 02n, for instance the words 00 or 0000, but not the words 000 or 00000. Before halting, write the result on the tape as a ’n’ or a ’y’ at the right of the rightmost character of the tape.
+5. A machine able to run the first machine of this list, the one computing an unary addition. The machine alphabet, states, transitions and input ARE the input of the machine you are writing, encoded as you see fit.
+
 
 ## Installation (for now)
 This will change because the peer evaluator needs to have ocaml installed, therefore we will take the easy way out using docker to make it work anywhere.
