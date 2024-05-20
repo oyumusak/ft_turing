@@ -17,7 +17,7 @@ type jsonHeaders = {
 	states : string array;       		(* States of the Turing machine *)
 	initial : string;            		(* Initial state *)
 	finals : string array;       		(* Final (halting) states *)
-	transitions : transition array; (* Transition rules *)
+	transitions : transition array;	(* Transition rules *)
 }
 
 
@@ -87,6 +87,19 @@ let findTransition (transitions : transition array) name (read : char) =
 	in
 	loop 0
 
+let isFinals finals toState =
+	let rec loop i =
+		if (finals.(i) = toState) then
+			true
+		else begin
+			if (Array.length finals) > (i + 1) then
+				loop (i + 1)
+			else
+				false
+		end
+	in
+	loop 0
+
 
 (* Initiates and runs the Turing machine algorithm. *)
 
@@ -95,7 +108,7 @@ let startAlgo jsonContent (input : char array) =
 		let transitions = jsonContent.transitions in
 		let currTransition = findTransition transitions state input.(index) in
 		input.(index) <- currTransition.write.[0]; 
-		if currTransition.to_state = "HALT" then
+		if (isFinals jsonContent.finals currTransition.to_state) = true then
 			input
 		else
 			runAlgo jsonContent input currTransition.to_state (if currTransition.action = "LEFT" then index - 1 else index + 1)
