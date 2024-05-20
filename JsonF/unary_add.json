@@ -6,25 +6,25 @@
     "initial" : "init",
     "finals" : [ "HALT"],
     "transitions" : {
-    "init": [
-        { "read" : "1", "to_state": "until_plus", "write": ".", "action": "RIGHT"},
-        { "read" : ".", "to_state": "init", "write": ".", "action": "RIGHT"}
-    ],
-    "until_plus": [
-        { "read" : "1", "to_state": "until_plus", "write": "1", "action": "RIGHT"},
-        { "read" : "+", "to_state": "until_equal", "write": "1", "action": "RIGHT"},
-        { "read" : ".", "to_state": "go_back", "write": "1", "action": "LEFT"},
-        { "read" : "=", "to_state": "HALT", "write": "1", "action": "LEFT"}
-
-    ],
-    "go_back": [
-        { "read" : ".", "to_state": "init", "write": ".", "action": "RIGHT"},
-        { "read" : "1", "to_state": "go_back", "write": "1", "action": "LEFT"}
-    ],
-    "until_equal": [
-        { "read" : "1", "to_state": "until_equal", "write": "1", "action": "RIGHT"},
-        { "read" : "=", "to_state": "HALT", "write": "=", "action": "LEFT"},
-        { "read" : ".", "to_state": "go_back", "write": ".", "action": "LEFT"}
-    ]
+        "init": [
+            { "read" : "1", "to_state": "until_plus", "write": ".", "action": "RIGHT"},
+            { "read" : ".", "to_state": "init", "write": ".", "action": "RIGHT"}
+        ],
+        "until_plus": [
+            { "read" : "1", "to_state": "until_plus", "write": "1", "action": "RIGHT"},
+            { "read" : "+", "to_state": "until_equal", "write": "1", "action": "RIGHT"},
+            { "read" : ".", "to_state": "go_back", "write": "1", "action": "LEFT"},
+            { "read" : "=", "to_state": "HALT", "write": "1", "action": "LEFT"}
+        ],
+        "go_back": [
+            { "read" : ".", "to_state": "init", "write": ".", "action": "RIGHT"},
+            { "read" : "1", "to_state": "go_back", "write": "1", "action": "LEFT"}
+        ],
+        "until_equal": [
+            { "read" : "1", "to_state": "until_equal", "write": "1", "action": "RIGHT"},
+            { "read" : "+", "to_state": "until_equal", "write": ".", "action": "LEFT"},
+            { "read" : "=", "to_state": "HALT", "write": ".", "action": "LEFT"},
+            { "read" : ".", "to_state": "go_back", "write": ".", "action": "LEFT"}
+        ]
     }
 }
