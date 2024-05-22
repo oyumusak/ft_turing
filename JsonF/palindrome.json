@@ -2,40 +2,55 @@
     "name" : "palindrome",
     "alphabet": [ "1", "0", ".", "="],
     "blank" : ".",
-    "states" : [ "init", "HALT", "OK", "KO","Until_Last_1","Until_Last_0"],
+    "states" : [ "init", "HALT","swipe_right_odd", "swipe_right_even", "swipe_left_odd","swipe_left_even","check_odd","check_even", "select_left","select_right"],
     "initial" : "init",
-    "finals" : ["OK", "KO"],
+    "finals" : ["HALT"],
     "transitions" : {
     "init": [
-        { "read" : "1", "to_state": "Until_Last_1", "write": ".", "action": "RIGHT"},
-        { "read" : "0", "to_state": "Until_Last_0", "write": ".", "action": "RIGHT"},
-        { "read" : ".", "to_state": "OK", "write": ".", "action": "RIGHT"}
+        { "read" : "1", "to_state": "swipe_right_odd", "write": ".", "action": "RIGHT"},
+        { "read" : "0", "to_state": "swipe_right_even", "write": ".", "action": "RIGHT"}
     ],
-    "Until_Last_1" :[
-        { "read" : ".", "to_state": "Check_1", "write": ".", "action": "LEFT"},
-        { "read" : "0", "to_state": "Until_Last_1" , "write": "0", "action": "RIGHT"},
-        { "read" : "1", "to_state": "Until_Last_1" , "write": "1", "action": "RIGHT"}
+    "swipe_right_odd": [
+        { "read" : "1", "to_state": "swipe_right_odd", "write": "1", "action": "RIGHT"},
+        { "read" : "0", "to_state": "swipe_right_odd", "write": "0", "action": "RIGHT"},
+        { "read" : "=", "to_state": "check_odd", "write": "=", "action": "LEFT"},
+        { "read" : ".", "to_state": "check_odd", "write": ".", "action": "LEFT"}
     ],
-    "Check_1" : [
-        { "read" : "1", "to_state": "reset", "write": ".", "action": "LEFT"},
-        { "read" : "0", "to_state": "KO", "write": ".", "action": "LEFT"},
-        { "read" : ".", "to_state": "KO", "write": ".", "action": "LEFT"}
-
+    "swipe_right_even": [
+        { "read" : "1", "to_state": "swipe_right_even", "write": "1", "action": "RIGHT"},
+        { "read" : "0", "to_state": "swipe_right_even", "write": "0", "action": "RIGHT"},
+        { "read" : "=", "to_state": "check_even", "write": "=", "action": "LEFT"},
+        { "read" : ".", "to_state": "check_even", "write": ".", "action": "LEFT"}
     ],
-    "Until_Last_0": [
-        { "read" : ".", "to_state": "Check_0", "write": ".", "action": "LEFT"},
-        { "read" : "0", "to_state": "Until_Last_1" , "write": "0", "action": "RIGHT"},
-        { "read" : "1", "to_state": "Until_Last_1" , "write": "1", "action": "RIGHT"}
+    "swipe_left_odd": [
+        { "read" : "1", "to_state": "swipe_left_odd", "write": "1", "action": "LEFT"},
+        { "read" : "0", "to_state": "swipe_left_odd", "write": "0", "action": "LEFT"},
+        { "read" : ".", "to_state": "check_odd", "write": ".", "action": "RIGHT"}
     ],
-    "Check_0" : [
-        { "read" : "0", "to_state": "reset", "write": ".", "action": "LEFT"},
-        { "read" : "1", "to_state": "KO", "write": ".", "action": "LEFT"},
-        { "read" : ".", "to_state": "KO", "write": ".", "action": "LEFT"}
+    "swipe_left_even": [
+        { "read" : "1", "to_state": "swipe_left_even", "write": "1", "action": "LEFT"},
+        { "read" : "0", "to_state": "swipe_left_even", "write": "0", "action": "LEFT"},
+        { "read" : ".", "to_state": "check_even", "write": ".", "action": "RIGHT"}
     ],
-    "reset" : [
-        { "read" : "0", "to_state": "reset", "write": "0", "action": "LEFT"},
-        { "read" : "1", "to_state": "reset", "write": "1", "action": "LEFT"},
-        { "read" : ".", "to_state": "init", "write": ".", "action": "RIGHT"}
+    "check_odd": [
+        { "read" : "1", "to_state": "select_left", "write": ".", "action": "LEFT"},
+        { "read" : "0", "to_state": "HALT", "write": ".", "action": "RIGHT"},
+        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+    ],
+    "check_even": [
+        { "read" : "1", "to_state": "HALT", "write": ".", "action": "LEFT"},
+        { "read" : "0", "to_state": "select_right", "write": ".", "action": "RIGHT"},
+        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+    ],
+    "select_left": [
+        { "read" : "1", "to_state": "swipe_left_odd", "write": ".", "action": "LEFT"},
+        { "read" : "0", "to_state": "swipe_left_even", "write": ".", "action": "LEFT"},
+        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+    ],
+    "select_right": [
+        { "read" : "1", "to0_state": "swipe_right_odd", "write": ".", "action": "RIGHT"},
+        { "read" : "0", "to_state": "swipe_right_even", "write": ".", "action": "RIGHT"},
+        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
     ]
     }
 }
