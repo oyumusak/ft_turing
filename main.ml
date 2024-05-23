@@ -116,13 +116,12 @@ let startAlgo jsonContent (input : char array) =
 	runAlgo jsonContent input jsonContent.initial 0
 
 
-let checkAlphabet al =
-	if (Array.length al) < 3 then begin print_string "alphabet too short"; exit 0 end;
-	()
 
-let checkInput jsonContent inp =
+
+let checkDepends jsonContent inp =
 	let blank = jsonContent.blank in
 	let lastChCount = ref 0 in
+	if (Array.length jsonContent.alphabet) < 3 then begin print_string "alphabet too short"; exit 0 end;
 	Array.iter (fun x -> 
 		if x = blank.[0] then begin
 			print_string "No Blank Char In Input!!!"; exit 0
@@ -145,8 +144,7 @@ let () =
 	let jsonContent = Yojson.Basic.from_string fileContent in
 	let jsonContent = makeRecord jsonContent in
 	let input = Array.init (String.length args.(2)) (fun i -> args.(2).[i]) in
-	checkAlphabet jsonContent.alphabet;
-	checkInput jsonContent input;
+	checkDepends jsonContent input;
 	let result = startAlgo jsonContent input in
 	Array.iter (fun x -> Printf.printf "%c" x) result;
 
