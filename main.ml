@@ -105,8 +105,24 @@ let isFinals finals toState =
 
 let startAlgo jsonContent (input : char array) =
 	let rec runAlgo jsonContent (input : char array) state index =
+		Printf.printf "[";
 		let transitions = jsonContent.transitions in
 		let currTransition = findTransition transitions state input.(index) in
+		let helper = ref 0 in
+		Array.iter (fun x ->
+			if !helper = index then
+				Printf.printf "<%c>" x
+			else begin
+				Printf.printf " %c " x
+			end;
+			incr helper
+		) input;
+		(*
+		if index + 1 < (Array.length input) then begin
+			let nextTransition = findTransition transitions currTransition.to_state input.(index + 1) in
+			Printf.printf " (%s %c %s)\n" currTransition.to_state currTransition.write.[0] currTransition.action
+		end;*)
+		Printf.printf "] [%s %c %s]\n" currTransition.to_state currTransition.write.[0] currTransition.action;
 		input.(index) <- currTransition.write.[0]; 
 		if (isFinals jsonContent.finals currTransition.to_state) = true then
 			input
@@ -115,7 +131,7 @@ let startAlgo jsonContent (input : char array) =
 	in
 	runAlgo jsonContent input jsonContent.initial 0
 
-
+(* <1>001=  *)
 
 
 let checkDepends jsonContent inp =
@@ -129,20 +145,38 @@ let checkDepends jsonContent inp =
 		else if x = jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1).[0] then begin
 			incr lastChCount
 		end
-		else if (Array.exists (fun y -> y.[0] = x ) jsonContent.alphabet) = false then begin print_string "input characters must be alphabet characters!"; exit 0 end;
+		else if (Array.exists (fun y -> y.[0] = x ) jsonContent.alphabet) = false then begin
+			print_string "input characters must be alphabet characters!"; exit 0
+		end;
 		) inp;
-	if !lastChCount != 1 then begin print_string "alphabet last char count must be 1"; exit 0 end;
+	if !lastChCount != 1 then begin Printf.printf  "The last char must be %s and it should be unique" jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1); exit 0 end;
 	if inp.((Array.length inp) - 1) != jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1).[0] then begin
 		print_string "Alphabet last character must be input last character!";
 		exit 0
 	end;
 	()
 
+let printHeader jsonContent =
+	let nameLen = String.length jsonContent.name in
+	let rec printLoop c b e = Printf.printf "%c" c; if b < e then printLoop c (b + 1) e else () in 
+	printLoop '*' 0 (nameLen * 5);
+	print_string "\n";
+	printLoop '*' 0 (0);
+	printLoop ' ' 0 (nameLen * 2 - 1);
+	Printf.printf "%s" jsonContent.name;
+	printLoop ' ' 0 (nameLen * 2 - 2);
+	printLoop '*' 0 (0);
+	print_string "\n";
+	printLoop '*' 0 (nameLen * 5);
+	print_string "\n"
+	
+
 let () =
 	let args = checkArgs () in
 	let fileContent = readFile args.(1) in
 	let jsonContent = Yojson.Basic.from_string fileContent in
 	let jsonContent = makeRecord jsonContent in
+	printHeader jsonContent;
 	let input = Array.init (String.length args.(2)) (fun i -> args.(2).[i]) in
 	checkDepends jsonContent input;
 	let result = startAlgo jsonContent input in
