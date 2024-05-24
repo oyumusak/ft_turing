@@ -48,7 +48,7 @@
         { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
     ],
     "select_right": [
-        { "read" : "1", "to0_state": "swipe_right_odd", "write": ".", "action": "RIGHT"},
+        { "read" : "1", "to_state": "swipe_right_odd", "write": ".", "action": "RIGHT"},
         { "read" : "0", "to_state": "swipe_right_even", "write": ".", "action": "RIGHT"},
         { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
     ]
