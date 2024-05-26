@@ -1,19 +1,190 @@
 {
-    "name" : "palindrome",
-    "alphabet": [ "a", "b", "h", ":", "?", "#", "R", "L", "&", "$", "+", "1", ".","="],
-    "blank" : ".",
-    "states" : [ "init", "HALT","swipe_right_odd", "swipe_right_even", "swipe_left_odd","swipe_left_even","check_odd","check_even", "select_left","select_right"],
+    "name" : "UTM",
+    "alphabet": [ "!", "A","a",":","1","?",".","#","R","-","y","L","@","+","=","b","B","h","x","*"],
+    "blank" : " ",
+    "states" : ["init", "A", "A1?", "A1?.:", "A1?.:b#RA", "doA1?.:b#RA", "learn_rightB", "h"],
     "initial" : "init",
-    "finals" : ["HALT"],
+    "finals" : [ "h"],
     "transitions" : {
-    "init": [
-        { "read" : "a", "to_state": "swipe_right_odd", "write": "a", "action": "RIGHT"},
-        { "read" : "b", "to_state": "swipe_right_even", "write": "b", "action": "RIGHT"},
-        { "read" : "c", "to_state": "swipe_right_odd", "write": "c", "action": "RIGHT"}
-    ],
-    "first_state_a": [
-        {"read" : "-", "to_state": "first_state_a", "write": "-", "action": "RIGHT"},
-        {"read" : ""}
-    ]
+        "init" : [
+            {"read": "!", "to_state": "init", "write": "!", "action": "R"},
+            {"read": "A", "to_state": "A", "write": "A", "action": "R"},
+            {"read": "B", "to_state": "B", "write": "B", "action": "R"}
+        ],
+        "A" : [
+            {"read": "1", "to_state": "A1?", "write": "1", "action": "R"}
+        ],
+        "A1?" : [
+            {"read": "?", "to_state": "A1?", "write": "?", "action": "R"},
+            {"read": ".", "to_state": "A1?.:", "write": ".", "action": "R"}
+        ],
+        "A1?.:" : [
+            {"read": ":", "to_state": "A1?.:", "write": ":", "action": "R"},
+            {"read": "b", "to_state": "A1?.:b#RA", "write": "b", "action": "R"}
+        ],
+        "A1?.:b#RA": [
+            {"read": "A", "to_state": "A1?.:b#RA", "write": "A", "action": "R"},
+            {"read": "a", "to_state": "A1?.:b#RA", "write": "a", "action": "R"},
+            {"read": ":", "to_state": "A1?.:b#RA", "write": ":", "action": "R"},
+            {"read": "1", "to_state": "A1?.:b#RA", "write": "1", "action": "R"},
+            {"read": "?", "to_state": "A1?.:b#RA", "write": "?", "action": "R"},
+            {"read": ".", "to_state": "A1?.:b#RA", "write": ".", "action": "R"},
+            {"read": "#", "to_state": "A1?.:b#RA", "write": "#", "action": "R"},
+            {"read": "R", "to_state": "A1?.:b#RA", "write": "R", "action": "R"},
+            {"read": "-", "to_state": "A1?.:b#RA", "write": "-", "action": "R"},
+            {"read": "y", "to_state": "A1?.:b#RA", "write": "y", "action": "R"},
+            {"read": "L", "to_state": "A1?.:b#RA", "write": "L", "action": "R"},
+            {"read": "=", "to_state": "A1?.:b#RA", "write": "=", "action": "R"},
+            {"read": "b", "to_state": "A1?.:b#RA", "write": "b", "action": "R"},
+            {"read": "B", "to_state": "A1?.:b#RA", "write": "B", "action": "R"},
+            {"read": "+", "to_state": "A1?.:b#RA", "write": "+", "action": "R"},
+            {"read": "h", "to_state": "A1?.:b#RA", "write": "h", "action": "R"},
+            {"read": "@", "to_state": "doA1?.:b#RA", "write": "@", "action": "R"}
+        ],
+        "doA1?.:b#RA": [
+            {"read":"1", "to_state":"learn_rightB", "write":".", "action":"R"}
+        ],
+        "learn_rightB": [
+            {"read":"1", "to_state":"swipeLeft_B1", "write":"1", "action": "LEFT"},
+            {"read":"+", "to_state":"swipeLeft_B+", "write":"+", "action": "LEFT"}
+        ],
+        "swipeLeft_B1": [
+            {"read": "A", "to_state": "swipeLeft_B1", "write": "A", "action": "LEFT"},
+            {"read": "a", "to_state": "swipeLeft_B1", "write": "a", "action": "LEFT"},
+            {"read": ":", "to_state": "swipeLeft_B1", "write": ":", "action": "LEFT"},
+            {"read": "1", "to_state": "swipeLeft_B1", "write": "1", "action": "LEFT"},
+            {"read": "?", "to_state": "swipeLeft_B1", "write": "?", "action": "LEFT"},
+            {"read": ".", "to_state": "swipeLeft_B1", "write": ".", "action": "LEFT"},
+            {"read": "#", "to_state": "swipeLeft_B1", "write": "#", "action": "LEFT"},
+            {"read": "R", "to_state": "swipeLeft_B1", "write": "R", "action": "LEFT"},
+            {"read": "-", "to_state": "swipeLeft_B1", "write": "-", "action": "LEFT"},
+            {"read": "y", "to_state": "swipeLeft_B1", "write": "y", "action": "LEFT"},
+            {"read": "L", "to_state": "swipeLeft_B1", "write": "L", "action": "LEFT"},
+            {"read": "=", "to_state": "swipeLeft_B1", "write": "=", "action": "LEFT"},
+            {"read": "b", "to_state": "swipeLeft_B1", "write": "b", "action": "LEFT"},
+            {"read": "+", "to_state": "swipeLeft_B1", "write": "+", "action": "LEFT"},
+            {"read": "x", "to_state": "swipeLeft_B1", "write": "x", "action": "LEFT"},
+            {"read": "h", "to_state": "swipeLeft_B1", "write": "h", "action": "LEFT"},
+            {"read": "@", "to_state": "swipeLeft_B1", "write": "@", "action": "LEFT"},
+            {"read": "B", "to_state": "lookRight1", "write": "B", "action": "R"}
+        ],
+        "lookRight1": [
+            {"read":"1", "to_state":"B1step2", "write":"1", "action":"R"},
+            {"read":"+", "to_state":"lookRight1", "write":"+", "action": "LEFT"},
+            {"read":"@", "to_state":"lookRight1", "write":"@", "action": "LEFT"},
+            {"read":"B", "to_state":"swipeLeft_B1", "write":"B", "action": "LEFT"}
+        ],
+        "B1step2": [
+            {"read": "?", "to_state": "B1step2", "write": "?", "action": "R"},
+            {"read": "1", "to_state": "B1step3", "write": "1", "action": "R"}
+        ],
+        "B1step3": [
+            {"read": ":", "to_state": "B1step4", "write": ":", "action": "R"}
+        ],
+        "B1step4": [
+            {"read": "b", "to_state": "B1step5", "write": "b", "action": "R"}
+        ],
+        "B1step5": [
+            {"read": "#", "to_state": "B1step6", "write": "#", "action": "R"}
+        ],
+        "B1step6": [
+            {"read": "R", "to_state": "B1step7R", "write": "R", "action": "R"}
+        ],
+        "B1step7R": [
+            {"read": "A", "to_state": "B1step7R", "write": "A", "action": "R"},
+            {"read": "a", "to_state": "B1step7R", "write": "a", "action": "R"},
+            {"read": ":", "to_state": "B1step7R", "write": ":", "action": "R"},
+            {"read": "1", "to_state": "B1step7R", "write": "1", "action": "R"},
+            {"read": "?", "to_state": "B1step7R", "write": "?", "action": "R"},
+            {"read": ".", "to_state": "B1step7R", "write": ".", "action": "R"},
+            {"read": "#", "to_state": "B1step7R", "write": "#", "action": "R"},
+            {"read": "R", "to_state": "B1step7R", "write": "R", "action": "R"},
+            {"read": "-", "to_state": "B1step7R", "write": "-", "action": "R"},
+            {"read": "y", "to_state": "B1step7R", "write": "y", "action": "R"},
+            {"read": "L", "to_state": "B1step7R", "write": "L", "action": "R"},
+            {"read": "=", "to_state": "B1step7R", "write": "=", "action": "R"},
+            {"read": "b", "to_state": "B1step7R", "write": "b", "action": "R"},
+            {"read": "B", "to_state": "B1step7R", "write": "B", "action": "R"},
+            {"read": "+", "to_state": "B1step7R", "write": "+", "action": "R"},
+            {"read": "h", "to_state": "B1step7R", "write": "h", "action": "R"},
+            {"read": "@", "to_state": "doB1step7R", "write": "@", "action": "R"}
+        ],
+        "doB1step7R": [
+            {"read":".", "to_state":"doB1step7R", "write":".", "action":"R"},
+            {"read":"x", "to_state":"doB1step7R", "write":"x", "action":"R"},
+            {"read":"1", "to_state":"learn_rightB", "write":"x", "action":"R"}
+        ],
+        "swipeLeft_B+": [
+            {"read": "A", "to_state": "swipeLeft_B+", "write": "A", "action": "LEFT"},
+            {"read": "a", "to_state": "swipeLeft_B+", "write": "a", "action": "LEFT"},
+            {"read": ":", "to_state": "swipeLeft_B+", "write": ":", "action": "LEFT"},
+            {"read": "1", "to_state": "swipeLeft_B+", "write": "1", "action": "LEFT"},
+            {"read": "?", "to_state": "swipeLeft_B+", "write": "?", "action": "LEFT"},
+            {"read": ".", "to_state": "swipeLeft_B+", "write": ".", "action": "LEFT"},
+            {"read": "#", "to_state": "swipeLeft_B+", "write": "#", "action": "LEFT"},
+            {"read": "R", "to_state": "swipeLeft_B+", "write": "R", "action": "LEFT"},
+            {"read": "-", "to_state": "swipeLeft_B+", "write": "-", "action": "LEFT"},
+            {"read": "y", "to_state": "swipeLeft_B+", "write": "y", "action": "LEFT"},
+            {"read": "L", "to_state": "swipeLeft_B+", "write": "L", "action": "LEFT"},
+            {"read": "=", "to_state": "swipeLeft_B+", "write": "=", "action": "LEFT"},
+            {"read": "b", "to_state": "swipeLeft_B+", "write": "b", "action": "LEFT"},
+            {"read": "+", "to_state": "swipeLeft_B+", "write": "+", "action": "LEFT"},
+            {"read": "x", "to_state": "swipeLeft_B+", "write": "x", "action": "LEFT"},
+            {"read": "h", "to_state": "swipeLeft_B+", "write": "h", "action": "LEFT"},
+            {"read": "@", "to_state": "swipeLeft_B+", "write": "@", "action": "LEFT"},
+            {"read": "B", "to_state": "lookRight+", "write": "B", "action": "R"}
+        ],
+        "lookRight+": [
+            {"read":"1", "to_state":"lookRight+", "write":"1", "action":"LEFT"},
+            {"read":"+", "to_state":"B+step2", "write":"+", "action": "R"},
+            {"read":"@", "to_state":"lookRight+", "write":"@", "action": "LEFT"},
+            {"read":"B", "to_state":"swipeLeft_B+", "write":"B", "action": "LEFT"}
+        ],
+        "B+step2": [
+            {"read": "?", "to_state": "B+step3", "write": "?", "action": "R"}
+        ],
+        "B+step3": [
+            {"read": "1", "to_state": "B+step4", "write": "1", "action": "R"}
+        ],
+        "B+step4": [
+            {"read": ":", "to_state": "B+step5", "write": ":", "action": "R"}
+        ],
+        "B+step5": [
+            {"read": "h", "to_state": "B+step6", "write": "h", "action": "R"}
+        ],
+        "B+step6": [
+            {"read": "#", "to_state": "B+step7", "write": "#", "action": "R"}
+        ],
+        "B+step7": [
+            {"read": "L", "to_state": "B+step7L", "write": "L", "action": "R"}
+        ],
+        "B+step7L": [
+            {"read": "A", "to_state": "B+step7L", "write": "A", "action": "R"},
+            {"read": "a", "to_state": "B+step7L", "write": "a", "action": "R"},
+            {"read": ":", "to_state": "B+step7L", "write": ":", "action": "R"},
+            {"read": "1", "to_state": "B+step7L", "write": "1", "action": "R"},
+            {"read": "?", "to_state": "B+step7L", "write": "?", "action": "R"},
+            {"read": ".", "to_state": "B+step7L", "write": ".", "action": "R"},
+            {"read": "#", "to_state": "B+step7L", "write": "#", "action": "R"},
+            {"read": "R", "to_state": "B+step7L", "write": "R", "action": "R"},
+            {"read": "-", "to_state": "B+step7L", "write": "-", "action": "R"},
+            {"read": "y", "to_state": "B+step7L", "write": "y", "action": "R"},
+            {"read": "L", "to_state": "B+step7L", "write": "L", "action": "R"},
+            {"read": "=", "to_state": "B+step7L", "write": "=", "action": "R"},
+            {"read": "b", "to_state": "B+step7L", "write": "b", "action": "R"},
+            {"read": "B", "to_state": "B+step7L", "write": "B", "action": "R"},
+            {"read": "+", "to_state": "B+step7L", "write": "+", "action": "R"},
+            {"read": "h", "to_state": "B+step7L", "write": "h", "action": "R"},
+            {"read": "@", "to_state": "doB+step7L", "write": "@", "action": "R"}
+        ],
+        "doB+step7L": [
+            {"read":".", "to_state":"doB+step7L", "write":".", "action": "R"},
+            {"read":"x", "to_state":"doB+step7L", "write":"x", "action": "R"},
+            {"read":"+", "to_state":"finalStart", "write":"1", "action": "LEFT"}
+        ],
+        "finalStart": [
+            {"read":".", "to_state":"h", "write":".", "action": "R"},
+            {"read":"x", "to_state":"finalStart", "write":"1", "action": "LEFT"}
+        ]
     }
 }
