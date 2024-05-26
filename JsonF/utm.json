@@ -1,0 +1,19 @@
+{
+    "name" : "palindrome",
+    "alphabet": [ "a", "b", "h", ":", "?", "#", "R", "L", "&", "$", "+", "1", ".","="],
+    "blank" : ".",
+    "states" : [ "init", "HALT","swipe_right_odd", "swipe_right_even", "swipe_left_odd","swipe_left_even","check_odd","check_even", "select_left","select_right"],
+    "initial" : "init",
+    "finals" : ["HALT"],
+    "transitions" : {
+    "init": [
+        { "read" : "a", "to_state": "swipe_right_odd", "write": "a", "action": "RIGHT"},
+        { "read" : "b", "to_state": "swipe_right_even", "write": "b", "action": "RIGHT"},
+        { "read" : "c", "to_state": "swipe_right_odd", "write": "c", "action": "RIGHT"}
+    ],
+    "first_state_a": [
+        {"read" : "-", "to_state": "first_state_a", "write": "-", "action": "RIGHT"},
+        {"read" : ""}
+    ]
+    }
+}
