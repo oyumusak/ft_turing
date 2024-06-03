@@ -1,3 +1,4 @@
 (executable
  (name main)
- (libraries yojson))
+ (modules main utils machineone machinetwo types)
+ (libraries yojson ))

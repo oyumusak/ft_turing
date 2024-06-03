@@ -1,6 +1,6 @@
 {
     "name" : "0n1n",
-    "alphabet": [ "1", "0", ".", "=", "y", "n"],
+    "alphabet": [ "1", "0", ".", "y", "n","="],
     "blank" : ".",
     "states" : [ "init", "HALT", "OK","OK_LEFT","OK_RIGHT", "KO", "KO_LEFT", "KO_RIGHT", "go_right",  "Check_1", "go_left", "Check_0"],
     "initial" : "init",

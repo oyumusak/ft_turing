@@ -1,59 +1,3 @@
-open Yojson.Basic.Util
-
-
-type transition = {
-	name : string;        (* Current state name *)
-	read : string;        (* Character read from the tape *)
-	to_state : string;    (* State to transition to *)
-	write : string;       (* Character to write on the tape *)
-	action : string;      (* Action to take: "LEFT" or "RIGHT" *)
-}
-
-
-type jsonHeaders = {
-	name : string;               		(* Name of the Turing machine *)
-	alphabet : string array;     		(* Alphabet of the Turing machine *)
-	blank : string;              		(* Blank symbol *)
-	states : string array;       		(* States of the Turing machine *)
-	initial : string;            		(* Initial state *)
-	finals : string array;       		(* Final (halting) states *)
-	transitions : transition array;	(* Transition rules *)
-}
-
-
-(* Converts JSON representation of transitions into an array of transition records. 
-	Each record contains the name of the current state, the character read from the tape, 
-	the state to transition to, the character to write on the tape, and the action to take. 
-*)
-
-let initTransitions json =
-	json |> to_assoc |> List.map (fun (state, trans_list) ->
-		trans_list |> to_list |> List.map (fun trans ->
-		{
-			name = state;
-			read = trans |> member "read" |> to_string;
-			to_state = trans |> member "to_state" |> to_string;
-			write = trans |> member "write" |> to_string;
-			action = trans |> member "action" |> to_string;
-		}
-	)
-	) |> List.flatten |> Array.of_list
-
-
-(* Parses JSON content into a jsonHeaders record.*)
-
-let makeRecord jsonContent =
-	{
-		name = jsonContent |> member "name" |> to_string;
-		alphabet = jsonContent |> member "alphabet" |> to_list |> List.map to_string |> Array.of_list;
-		blank = jsonContent |> member "blank" |> to_string;
-		states = jsonContent |> member "states" |> to_list |> List.map to_string |> Array.of_list;
-		initial = jsonContent |> member "initial" |> to_string;
-		finals = jsonContent |> member "finals" |> to_list |> List.map to_string |> Array.of_list;
-		transitions = initTransitions (jsonContent |> member "transitions");
-	}
-
-
 let readFile filePath =
 	let inputChannel = open_in filePath in
 	let rec read_lines acc =
@@ -71,176 +15,27 @@ let readFile filePath =
 let checkArgs () =
 	let args = Sys.argv in
 	let argsLen = Array.length args in
-	if argsLen != 3 then begin print_string "You need 3 arg!\n"; exit 0 end;
+	if argsLen != 3 then begin print_string "You need 2 arg!\n"; exit 0 end;
 	args
 
+let checkFileExtension path extension =
+	if String.length extension > String.length path then
+		false
+	else
+		let sub = String.sub path (String.length path - String.length extension) (String.length extension) in
+		if sub = extension then true else false
 
-let findTransition (transitions : transition array) name (read : char) =
-	let rec loop i =
-		if (transitions.(i).name = name) then
-			if (transitions.(i).read = String.make 1 read) then
-				transitions.(i)
-			else
-				loop (i + 1)
-		else
-			loop (i + 1)
-	in
-	loop 0
-
-let isFinals finals toState =
-	let rec loop i =
-		if (finals.(i) = toState) then
-			true
-		else begin
-			if (Array.length finals) > (i + 1) then
-				loop (i + 1)
-			else
-				false
-		end
-	in
-	loop 0
-
-
-(* Initiates and runs the Turing machine algorithm. *)
-
-let startAlgo jsonContent (input : char array) =
-	let rec runAlgo jsonContent (input : char array) state index =
-		Printf.printf "[";
-		let transitions = jsonContent.transitions in
-		let currTransition = findTransition transitions state input.(index) in
-		let helper = ref 0 in
-		Array.iter (fun x ->
-			if !helper = index then
-				Printf.printf "<%c>" x
-			else begin
-				Printf.printf " %c " x
-			end;
-			incr helper
-		) input;
-		(*
-		if index + 1 < (Array.length input) then begin
-			let nextTransition = findTransition transitions currTransition.to_state input.(index + 1) in
-			Printf.printf " (%s %c %s)\n" currTransition.to_state currTransition.write.[0] currTransition.action
-		end;*)
-		Printf.printf "] [%s %c %s]\n" currTransition.to_state currTransition.write.[0] currTransition.action;
-		input.(index) <- currTransition.write.[0]; 
-		if (isFinals jsonContent.finals currTransition.to_state) = true then
-			input
-		else
-			runAlgo jsonContent input currTransition.to_state (if currTransition.action = "LEFT" then index - 1 else index + 1)
-	in
-	runAlgo jsonContent input jsonContent.initial 0
-
-(* <1>001=  *)
-
-
-let checkDepends jsonContent inp =
-	let blank = jsonContent.blank in
-	let lastChCount = ref 0 in
-	if (Array.length jsonContent.alphabet) < 3 then begin print_string "alphabet too short"; exit 0 end;
-	Array.iter (fun x -> 
-		if x = blank.[0] then begin
-			print_string "No Blank Char In Input!!!"; exit 0
-		end
-		else if x = jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1).[0] then begin
-			incr lastChCount
-		end
-		else if (Array.exists (fun y -> y.[0] = x ) jsonContent.alphabet) = false then begin
-			print_string "input characters must be alphabet characters!"; exit 0
-		end;
-		) inp; (*1111=*)
-	if !lastChCount != 1 then begin Printf.printf  "The last char must be %s and it should be unique" jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1); exit 0 end;
-	if inp.((Array.length inp) - 1) != jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1).[0] then begin
-		print_string "Alphabet last character must be input last character!";
-		exit 0
-	end;
-	()
-
-let printHeader jsonContent =
-	let nameLen = String.length jsonContent.name in
-	let rec printLoop c b e = Printf.printf "%c" c; if b < e then printLoop c (b + 1) e else () in 
-	printLoop '*' 0 (nameLen * 5);
-	print_string "\n";
-	printLoop '*' 0 (0);
-	printLoop ' ' 0 (nameLen * 2 - 1);
-	Printf.printf "%s" jsonContent.name;
-	printLoop ' ' 0 (nameLen * 2 - 2);
-	printLoop '*' 0 (0);
-	print_string "\n";
-	printLoop '*' 0 (nameLen * 5);
-	print_string "\n"
-
-
-	let stringSplit str del counter =
-		let result = Array.make counter " " in
-		let index = ref 0 in
-		let strr = ref "" in
-		String.iter (fun x ->
-			if x = del then begin 
-				result.(!index) <- !strr;
-				incr index;
-				strr := ""
-			end
-			else if x = '\n' then begin () end
-			else begin
-				strr := (!strr) ^ String.make 1 x
-			end; 
-		) str;
-		result.(!index) <- !strr;
-		result
-	
-let startAlgoo transitions input =
-	let rec runAlgo (input : char array) state index =
-		Printf.printf "[";
-		let currTransition = findTransition transitions state input.(index) in
-		let helper = ref 0 in
-		Array.iter (fun x ->
-			if !helper = index then
-				Printf.printf "<%c>" x
-			else begin
-				Printf.printf " %c " x
-			end;
-			incr helper
-		) input;
-		Printf.printf "] [%s %c %s]\n" currTransition.to_state currTransition.write.[0] currTransition.action;
-		input.(index) <- currTransition.write.[0]; 
-		if "h" = currTransition.to_state = true then
-			input
-		else
-			runAlgo input currTransition.to_state (if currTransition.action = "L" then index - 1 else index + 1)
-	in
-	runAlgo input transitions.(0).name 0
 
 let () =
 	let args = checkArgs () in
 	let instPath = args.(1) in
 	let fileContent = readFile instPath in
-	let pathLen = String.length instPath in
+	if String.length fileContent = 0 then begin print_string "File cannot be empty!\n"; exit 0 end;
 	let input = Array.init (String.length args.(2)) (fun i -> args.(2).[i]) in
-	if instPath.[pathLen - 1] = 'n' && instPath.[pathLen - 2] = 'o' && instPath.[pathLen - 3] = 's' && instPath.[pathLen - 4] = 'j' && instPath.[pathLen - 5] = '.' then begin   
-		let jsonContent = Yojson.Basic.from_string fileContent in
-		let jsonContent = makeRecord jsonContent in
-		printHeader jsonContent;
-		checkDepends jsonContent input;
-		let result = startAlgo jsonContent input in
-		Array.iter (fun x -> Printf.printf "%c" x) result;
-	end
-	else if instPath.[pathLen - 1] = 't' && instPath.[pathLen - 2] = 'x' && instPath.[pathLen - 3] = 't' && instPath.[pathLen - 4] = '.' then begin
-		let counter = ref 1 in
-		String.iter (fun x -> if x = '&' then begin incr counter end;) fileContent;
-		let myarray : string array = stringSplit fileContent '&' !counter in
-		let transitions : transition array = Array.init !counter (fun x ->
-			{
-				name = String.make 1 myarray.(x).[0];
-				to_state = String.make 1 myarray.(x).[2];
-				action = String.make 1 myarray.(x).[String.length myarray.(x) - 1];
-				write = String.make 1 myarray.(x).[6];
-				read = String.make 1 myarray.(x).[4];
-			}
-		) in
-		let result = startAlgoo transitions input in
-		Array.iter (fun x -> Printf.printf "%c" x) result
-	end
+	if checkFileExtension instPath ".json" then   
+		Machineone.startMachine fileContent input
+	else if checkFileExtension instPath ".txt" then
+		Machinetwo.startMachine fileContent input
 	else
 		Printf.printf "Arg 1 must be json or txt!\n";
 
