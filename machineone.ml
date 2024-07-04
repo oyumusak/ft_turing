@@ -40,7 +40,7 @@ let startAlgo jsonContent (input : char array) =
 
 let findStateToState transitions to_state =
   let rec loop i list =
-    if i + 1 >= Array.length transitions then begin
+    if i + 1 > Array.length transitions then begin
       list
     end
     else if transitions.(i).to_state = to_state then begin
@@ -69,13 +69,18 @@ let checkAlgo jsonContent =
   ) transitions = false then begin print_string "Transitions to_state must be finals\n"; exit 0 end;
   let tmpFinalsCount = ref 0 in
   let tmpCounter = ref 0 in
+
   Array.iter (fun x ->
     let finalIndex = findStateToState transitions x in
     tmpFinalsCount := !tmpFinalsCount + List.length finalIndex;
+    Printf.printf "Final Counts= %d\n" (List.length finalIndex);
+    (*let pseudo = ref "" in*)
     let rec loop indexs =
       if isEmptyList indexs then begin print_string "logic error\n"; exit 0 end;
       List.iter (fun y -> 
-        (*printState transitions.(y);*)
+        printState transitions.(y);
+        (*if transitions.(y).action = "LEFT" then begin !pseudo ^ transitions.(y).write end;
+        if transitions.(y).action = "LEFT"  then begin*) 
         if transitions.(y).name = jsonContent.initial then begin
           incr tmpCounter;
           ()
@@ -88,7 +93,9 @@ let checkAlgo jsonContent =
     in
     loop finalIndex
   ) jsonContent.finals;
-  if !tmpCounter != !tmpFinalsCount then begin print_string "logic err!\n"; exit 0 end;
+  Printf.printf "FinalsCount = %d\nCounter = %d\n" !tmpFinalsCount !tmpCounter;
+  if !tmpCounter < !tmpFinalsCount then begin print_string "logic err!\n"; exit 0 end;
+
   (*Array.iter (fun x ->
     let finalIndexs = findStateToState transitions x in
     let rec loop indexs =
