@@ -16,10 +16,15 @@ let isFinals finals toState =
 
 (* Initiates and runs the Turing machine algorithm. *)
 let startAlgo jsonContent (input : char array) =
+  let inputHitCount = ref (Array.init (Array.length input)(fun _ -> 0)) in
 	let rec runAlgo jsonContent (input : char array) state index =
-		Printf.printf "[";
 		let transitions = jsonContent.transitions in
-		let currTransition = Utils.findTransition transitions state input.(index) in
+    let _ = match Utils.findTransitionn transitions state input.(index) with
+    | Some transition -> transition
+    | None -> print_string "Transition not found!\n"; exit 0
+    in
+    let currTransition = Utils.findTransition transitions state input.(index) in
+    Printf.printf "[";
 		let helper = ref 0 in
 		Array.iter (fun x ->
 			if !helper = index then
@@ -31,10 +36,27 @@ let startAlgo jsonContent (input : char array) =
 		) input;
 		Printf.printf "] [%s %c %s]\n" currTransition.to_state currTransition.write.[0] currTransition.action;
 		input.(index) <- currTransition.write.[0]; 
-		if (isFinals jsonContent.finals currTransition.to_state) = true then
-			input
-		else
-			runAlgo jsonContent input currTransition.to_state (if currTransition.action = "LEFT" then index - 1 else index + 1)
+		if (isFinals jsonContent.finals currTransition.to_state) = true then begin
+      input
+    end
+		else begin
+      if currTransition.action = "LEFT" && index - 1 < 0  then begin
+        print_string "indexx LEFT out of bounds\n";
+        exit 1
+      end
+      else if currTransition.action = "RIGHT" && index + 1 > Array.length input then begin
+        print_string "indexx RIGHT out of bounds\n";
+        exit 1
+      end
+      else begin
+        !inputHitCount.(index) <- !inputHitCount.(index) + 1;
+        Array.iteri (fun i x -> 
+          if not(i >= index - 1 && i <= index + 1) && (!inputHitCount.(i) - 1 > 0)  then begin !inputHitCount.(i) <- x - 1 end;
+        )!inputHitCount;
+        if Array.exists (fun x -> x >= 100) !inputHitCount then begin print_string "Infinite loop dedected!!!\n"; exit 0 end;
+			  runAlgo jsonContent input currTransition.to_state (if currTransition.action = "LEFT" then index - 1 else index + 1)
+      end;
+    end
 	in
 	runAlgo jsonContent input jsonContent.initial 0
 
@@ -62,6 +84,7 @@ let isEmptyList lst =
 let printState (state : transition) =
   Printf.printf "[name:%s,read:%s,to_state:%s,write:%s,action:%s]\n" state.name state.read state.to_state state.write state.action
 
+(*
 let checkAlgo jsonContent =
   let transitions = jsonContent.transitions in
   if Array.exists (fun x ->
@@ -110,12 +133,13 @@ let checkAlgo jsonContent =
     loop finalIndexs
   ) jsonContent.finals;*)
   ()
-
+*)
 let checkDepends (jsonContent : jsonHeaders) inp =
 	let blank = jsonContent.blank in
 	let lastChCount = ref 0 in
 	if (Array.length jsonContent.alphabet) < 3 then begin print_string "alphabet too short"; exit 0 end;
   if Array.exists (fun x -> blank.[0] = x) inp then begin print_string "No Blank Char In Input!!!"; exit 0 end;
+
 	Array.iter (fun x ->
 		if x = jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1).[0] then begin
 			incr lastChCount
@@ -123,12 +147,14 @@ let checkDepends (jsonContent : jsonHeaders) inp =
 		else if (Array.exists (fun y -> y.[0] = x ) jsonContent.alphabet) = false then begin
 			print_string "input characters must be alphabet characters!"; exit 0
 		end;
-		) inp;
+	) inp;
+
 	if !lastChCount != 1 then begin Printf.printf  "The last char must be %s and it should be unique" jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1); exit 0 end;
 	if inp.((Array.length inp) - 1) != jsonContent.alphabet.((Array.length jsonContent.alphabet) - 1).[0] then begin
 		print_string "Alphabet last character must be input last character!";
 		exit 0
 	end;
+
   let transitions = jsonContent.transitions in
   Array.iter (fun (x : transition) ->
     if not (x.action = "RIGHT" || x.action = "LEFT") then begin
@@ -136,6 +162,9 @@ let checkDepends (jsonContent : jsonHeaders) inp =
     end;
     if Array.exists (fun y -> y = x.name) jsonContent.states = false then begin print_string "Transition name must be member of states\n"; exit 0 end;
   ) transitions;
+  if Array.exists (fun x ->
+    (Array.exists (fun y -> x.to_state = y) jsonContent.finals) = true 
+  ) transitions = false then begin print_string "Transitions to_state must be finals\n"; exit 0 end;
   (*
   if Array.exists (fun (x : transition) ->
     (Array.exists (fun y -> x.name = y) jsonContent.states) = true 
@@ -146,9 +175,7 @@ let checkDepends (jsonContent : jsonHeaders) inp =
   ) states = false then begin print_string "Statelerin hepsi states te kayitli olmali!\n"; exit 0 end;*)
   (*
   let transitions = jsonContent.transitions in
-  if Array.exists (fun x ->
-    (Array.exists (fun y -> x.to_state = y) jsonContent.finals) = true 
-  ) transitions = false then begin print_string "Transitions to_state must be finals\n"; exit 0 end;*)
+  *)
   ()
 
 let printHeader jsonContent =
@@ -200,6 +227,6 @@ let startMachine fileContent input =
   let jsonContent : jsonHeaders = makeRecord jsonContent in
   printHeader jsonContent;
   checkDepends jsonContent input;
-  checkAlgo jsonContent;
+  (*checkAlgo jsonContent;*)
   let result = startAlgo jsonContent input in
   Array.iter (fun x -> Printf.printf "%c" x) result;
