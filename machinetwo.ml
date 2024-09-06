@@ -86,6 +86,25 @@ let alphabetParse (fileContent : string) =
 	in
 	loop 2
 
+let checkAlphabet alp input =
+	let counter = ref 0 in
+	String.iter (fun x ->
+		String.iter (fun y ->
+			if x = y then begin incr counter end;
+		) alp;
+		if !counter > 1 then begin print_string "alphabet characters must be unique\n"; exit 0 end;
+		counter := 0
+	) alp;
+	if alp.[(String.length alp) - 1] != input.((Array.length input) - 1) then begin
+		print_string "input last character must be alphabet last character!\n";
+		exit 0
+	end;
+	Array.iter (fun x ->
+		if alp.[(String.length alp) - 1] = x then begin incr counter end;
+		if !counter > 1 then begin print_string "alphabet last character must be unique in input!\n"; exit 0 end;
+	) input;
+	()
+
 let findInStr (fileContent : string) (c : char) =
 	let rec loop (index : int) =
 		if index >= (String.length fileContent) then begin Printf.printf "char %c not found in str\n" c; exit 0 end
@@ -122,17 +141,22 @@ let stateParse (fileContent : string) =
 	in
 	loop 2
 
+let checkStates (transitions : transition array) (states : string) =
+	if (String.length states) < 3 then begin print_string "States too short!\n"; exit 0 end;
+	String.iter (fun state ->
+		if (Array.exists (fun (trans : transition) -> trans.name.[0] = state ) transitions) = false && state != states.[(String.length states) - 1] then begin
+			print_string "state not found in transition\n";
+			exit 0
+		end;
+	) states;
+	()
+
 let startMachine fileContent input =
-	(*alphabet a = ... states s=... *)
 	let alphabet : string = alphabetParse fileContent in
+	checkAlphabet alphabet input;
 	let fileContent = removeLine fileContent in
 	let states = stateParse fileContent in
 	let fileContent = removeLine fileContent in
-	Printf.printf "%s\n" fileContent;
-	Printf.printf "%s\n" states;
-	String.iter (fun c -> Printf.printf "%c," c) alphabet;
-	print_string "\n";
-	Array.iter (fun c -> Printf.printf "%c," c) input;
   let counter = ref 1 in
   String.iter (fun x -> if x = '&' then begin incr counter end;) fileContent;
   let myarray : string array = stringSplit fileContent '&' !counter in
@@ -145,5 +169,6 @@ let startMachine fileContent input =
       read = String.make 1 myarray.(x).[4];
     }
   ) in
+	checkStates transitions states;
   let result = startAlgoo transitions input in
   Array.iter (fun x -> Printf.printf "%c" x) result
