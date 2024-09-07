@@ -2,55 +2,65 @@
     "name" : "palindrome",
     "alphabet": [ "1", "0", ".", "="],
     "blank" : ".",
-    "states" : [ "init", "HALT","swipe_right_odd", "swipe_right_even", "swipe_left_odd","swipe_left_even","check_odd","check_even", "select_left","select_right"],
+    "states" : [ "init", "HALT", "go_right_0", "check_left_0", "go_right_1", "check_left_1", "NO", "Continue", "OK", "NOADD", "check_once_0", "check_once_1"],
     "initial" : "init",
     "finals" : ["HALT"],
     "transitions" : {
     "init": [
-        { "read" : "1", "to_state": "swipe_right_odd", "write": ".", "action": "RIGHT"},
-        { "read" : "0", "to_state": "swipe_right_even", "write": ".", "action": "RIGHT"}
+        { "read" : "1", "to_state": "check_once_1", "write": ".", "action": "RIGHT"},
+        { "read" : "0", "to_state": "check_once_0", "write": ".", "action": "RIGHT"}
     ],
-    "swipe_right_odd": [
-        { "read" : "1", "to_state": "swipe_right_odd", "write": "1", "action": "RIGHT"},
-        { "read" : "0", "to_state": "swipe_right_odd", "write": "0", "action": "RIGHT"},
-        { "read" : "=", "to_state": "check_odd", "write": "=", "action": "LEFT"},
-        { "read" : ".", "to_state": "check_odd", "write": ".", "action": "LEFT"}
+    "check_once_0": [
+        { "read" : "1", "to_state": "go_right_0", "write": "1", "action": "RIGHT"},
+        { "read" : "0", "to_state": "go_right_0", "write": "0", "action": "RIGHT"},
+        { "read" : ".", "to_state": "check_left_0", "write": ".", "action": "LEFT"},
+        { "read" : "=", "to_state": "HALT", "write": "y", "action": "LEFT"}
     ],
-    "swipe_right_even": [
-        { "read" : "1", "to_state": "swipe_right_even", "write": "1", "action": "RIGHT"},
-        { "read" : "0", "to_state": "swipe_right_even", "write": "0", "action": "RIGHT"},
-        { "read" : "=", "to_state": "check_even", "write": "=", "action": "LEFT"},
-        { "read" : ".", "to_state": "check_even", "write": ".", "action": "LEFT"}
+    "go_right_0": [
+        { "read" : "1", "to_state": "go_right_0", "write": "1", "action": "RIGHT"},
+        { "read" : "0", "to_state": "go_right_0", "write": "0", "action": "RIGHT"},
+        { "read" : ".", "to_state": "check_left_0", "write": ".", "action": "LEFT"},
+        { "read" : "=", "to_state": "check_left_0", "write": "=", "action": "LEFT"}
     ],
-    "swipe_left_odd": [
-        { "read" : "1", "to_state": "swipe_left_odd", "write": "1", "action": "LEFT"},
-        { "read" : "0", "to_state": "swipe_left_odd", "write": "0", "action": "LEFT"},
-        { "read" : ".", "to_state": "check_odd", "write": ".", "action": "RIGHT"}
+    "check_left_0": [
+        { "read" : "1", "to_state": "NO", "write": ".", "action": "LEFT"},
+        { "read" : "0", "to_state": "Continue", "write": ".", "action": "LEFT"},
+        { "read" : ".", "to_state": "OK", "write": ".", "action": "LEFT"}
     ],
-    "swipe_left_even": [
-        { "read" : "1", "to_state": "swipe_left_even", "write": "1", "action": "LEFT"},
-        { "read" : "0", "to_state": "swipe_left_even", "write": "0", "action": "LEFT"},
-        { "read" : ".", "to_state": "check_even", "write": ".", "action": "RIGHT"}
+    "check_once_1": [
+        { "read" : "1", "to_state": "go_right_1", "write": "1", "action": "RIGHT"},
+        { "read" : "0", "to_state": "go_right_1", "write": "0", "action": "RIGHT"},
+        { "read" : ".", "to_state": "check_left_1", "write": ".", "action": "LEFT"},
+        { "read" : "=", "to_state": "HALT", "write": "y", "action": "LEFT"}
     ],
-    "check_odd": [
-        { "read" : "1", "to_state": "select_left", "write": ".", "action": "LEFT"},
-        { "read" : "0", "to_state": "HALT", "write": ".", "action": "RIGHT"},
-        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+    "go_right_1": [
+        { "read" : "1", "to_state": "go_right_1", "write": "1", "action": "RIGHT"},
+        { "read" : "0", "to_state": "go_right_1", "write": "0", "action": "RIGHT"},
+        { "read" : ".", "to_state": "check_left_1", "write": ".", "action": "LEFT"},
+        { "read" : "=", "to_state": "check_left_1", "write": "=", "action": "LEFT"}
     ],
-    "check_even": [
-        { "read" : "1", "to_state": "HALT", "write": ".", "action": "LEFT"},
-        { "read" : "0", "to_state": "select_right", "write": ".", "action": "RIGHT"},
-        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+    "check_left_1": [
+        { "read" : "1", "to_state": "Continue", "write": ".", "action": "LEFT"},
+        { "read" : "0", "to_state": "NO", "write": ".", "action": "LEFT"},
+        { "read" : ".", "to_state": "OK", "write": ".", "action": "LEFT"}
     ],
-    "select_left": [
-        { "read" : "1", "to_state": "swipe_left_odd", "write": ".", "action": "LEFT"},
-        { "read" : "0", "to_state": "swipe_left_even", "write": ".", "action": "LEFT"},
-        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+    "Continue": [
+        { "read" : "1", "to_state": "Continue", "write": "1", "action": "LEFT"},
+        { "read" : "0", "to_state": "Continue", "write": "0", "action": "LEFT"},
+        { "read" : ".", "to_state": "init", "write": ".", "action": "RIGHT"}
     ],
-    "select_right": [
-        { "read" : "1", "to_state": "swipe_right_odd", "write": ".", "action": "RIGHT"},
-        { "read" : "0", "to_state": "swipe_right_even", "write": ".", "action": "RIGHT"},
-        { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+    "NO": [
+        { "read" : "1", "to_state": "NO", "write": ".", "action": "LEFT"},
+        { "read" : "0", "to_state": "NO", "write": ".", "action": "LEFT"},
+        { "read" : ".", "to_state": "NOADD", "write": ".", "action": "RIGHT"}
+    ],
+    "NOADD": [
+        { "read" : ".", "to_state": "NOADD", "write": ".", "action": "RIGHT"},
+        { "read" : "=", "to_state": "HALT", "write": "n", "action": "LEFT"}
+    ],
+    "OK": [
+        { "read" : ".", "to_state": "OK", "write": ".", "action": "RIGHT"},
+        { "read" : "=", "to_state": "HALT", "write": "y", "action": "LEFT"}
     ]
     }
 }
