@@ -1,4 +1,3 @@
-
 open Types
 
 let stringSplit str del counter =
@@ -151,6 +150,26 @@ let checkStates (transitions : transition array) (states : string) =
 	) states;
 	()
 
+	(*todo*)
+(*
+let checkTransitions jsonContent =
+	let lineCount = ref 0 in
+	let loop index =
+		if lineCount mod 2 = 0 then begin
+			if then begin jsonContent.[index] != '&' & jsonContent.[index + 1] begin
+				Printf.printf "Excepted &\\n but has %c%c\n" jsonContent.[index] jsonContent.[index + 1];
+				exit 0
+			end;
+			loop index + 2
+		end
+		else begin
+			if jsonContent.[index + 1] != '-' || jsonContent.[index + 3] != ':' || jsonContent.[index + 5] != '?' || not(jsonContent.[index + 7] != 'R' || jsonContent.[index + 7] != 'L') then begin
+				Printf.printf "Syntax Error\n";
+				exit 0
+			end;
+			loop index + 8
+		end; 
+*)
 let startMachine fileContent input =
 	let alphabet : string = alphabetParse fileContent in
 	checkAlphabet alphabet input;
