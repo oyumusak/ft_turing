@@ -65,16 +65,17 @@ let startAlgoo (transitions : transition array) (input : char array) =
 
 let alphabetParse (fileContent : string) =
 	let alphabet = ref "" in
-	if fileContent.[0] != 'a' || fileContent.[1] != '=' then begin print_string "file contentin a= olarak baslaması lazim!\n"; exit 0 end;
+	if fileContent.[0] != 'a' || fileContent.[1] != '=' then begin print_string "file content must start with \"a=\"\n"; exit 0 end;
 	let rec loop (index : int) =
-		if index mod 2 = 1 then begin (*tek sayilar virgul olmali*)
+		if index + 1 > (String.length fileContent) then begin print_string "File format error\n"; exit 0 end
+		else if index mod 2 = 1 then begin (*tek sayilar virgul olmali*)
 			if fileContent.[index] = '\n' then begin !alphabet end
 			else if fileContent.[index] = ',' then begin loop (index + 1) end
 			else begin print_string "file format error!\n"; exit 0 end;
 		end
 		else begin
 			if fileContent.[index] = 'a' || fileContent.[index] = 's' || fileContent.[index] = ':' || fileContent.[index] = '?' || fileContent.[index] = '#' || fileContent.[index] = 'R' || fileContent.[index] = 'L' then begin
-				Printf.printf "alfabe karakteri %c olamaz!\n" fileContent.[index];
+				Printf.printf "alphabet character cannot be <%c>!\n" fileContent.[index];
 				exit 0
 			end
 			else begin
@@ -122,7 +123,8 @@ let stateParse (fileContent : string) =
 	let states = ref "" in
 	if fileContent.[0] != 's' || fileContent.[1] != '=' then begin print_string "file contentin s= olarak baslaması lazim!\n"; exit 0 end;
 	let rec loop (index : int) =
-		if index mod 2 = 1 then begin (*tek sayilar virgul olmali*)
+		if index + 1 > (String.length fileContent) then begin print_string "File Format Error\n"; exit 0 end
+		else if index mod 2 = 1 then begin (*tek sayilar virgul olmali*)
 			if fileContent.[index] = '\n' then begin !states end
 			else if fileContent.[index] = ',' then begin loop (index + 1) end
 			else begin print_string "file format error!\n"; exit 0 end;
@@ -142,6 +144,8 @@ let stateParse (fileContent : string) =
 
 let checkStates (transitions : transition array) (states : string) =
 	if (String.length states) < 3 then begin print_string "States too short!\n"; exit 0 end;
+	if states.[(String.length states) - 1] != 'h' then begin print_string "Last state must be h for halt!\n"; exit 0 end;
+	Printf.printf "%c\n" states.[(String.length states) - 1];
 	String.iter (fun state ->
 		if (Array.exists (fun (trans : transition) -> trans.name.[0] = state ) transitions) = false && state != states.[(String.length states) - 1] then begin
 			print_string "state not found in transition\n";
@@ -150,34 +154,43 @@ let checkStates (transitions : transition array) (states : string) =
 	) states;
 	()
 
-	(*todo*)
-(*
-let checkTransitions jsonContent =
+
+let checkTransitions fileContent =
 	let lineCount = ref 0 in
-	let loop index =
-		if lineCount mod 2 = 0 then begin
-			if then begin jsonContent.[index] != '&' & jsonContent.[index + 1] begin
-				Printf.printf "Excepted &\\n but has %c%c\n" jsonContent.[index] jsonContent.[index + 1];
+	let rec loop index =
+		if index + 1 > (String.length fileContent) then begin
+			if !lineCount = 0 then begin print_string "File Format Error!\n"; exit 0 end
+			else begin () end;
+		end
+		else if !lineCount mod 2 = 0 then begin
+			if fileContent.[index] != '&' && fileContent.[index + 1] != '\n' then begin
+				Printf.printf "Excepted &\\n but has %c%c\n" fileContent.[index] fileContent.[index + 1];
 				exit 0
 			end;
-			loop index + 2
+			incr lineCount;
+			loop (index + 2)
 		end
 		else begin
-			if jsonContent.[index + 1] != '-' || jsonContent.[index + 3] != ':' || jsonContent.[index + 5] != '?' || not(jsonContent.[index + 7] != 'R' || jsonContent.[index + 7] != 'L') then begin
+			if fileContent.[index + 1] != '-' || fileContent.[index + 3] != ':' || fileContent.[index + 5] != '?' || fileContent.[index + 7] != '#' || not(fileContent.[index + 8] = 'R' || fileContent.[index + 8] = 'L') || fileContent.[index + 9] != '\n' then begin
 				Printf.printf "Syntax Error\n";
 				exit 0
 			end;
-			loop index + 8
-		end; 
-*)
+			incr lineCount;
+			loop (index + 10)
+		end;
+	in
+	loop 0
+
 let startMachine fileContent input =
 	let alphabet : string = alphabetParse fileContent in
 	checkAlphabet alphabet input;
 	let fileContent = removeLine fileContent in
 	let states = stateParse fileContent in
 	let fileContent = removeLine fileContent in
-  let counter = ref 1 in
+	checkTransitions fileContent;
+  let counter = ref 0 in
   String.iter (fun x -> if x = '&' then begin incr counter end;) fileContent;
+	let fileContent = removeLine fileContent in
   let myarray : string array = stringSplit fileContent '&' !counter in
   let transitions : transition array = Array.init !counter (fun x ->
     {
