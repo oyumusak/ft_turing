@@ -43,4 +43,7 @@ make new
 dune exec ./main.exe path_to_json_file.json input_string
 ```
 
+"A 1?.>B#R B 1?1>B#R +?1>B#R e?e>H#L @ 111+11="
+"alphabet": [ "A", "B", "H", "L", "R", "e", "#", "1", "?", ".", ">", "+" , "="],
 
+"A1?.>B#R B1?1>B#R+?1>B#Re?e>H#L@111+11="
