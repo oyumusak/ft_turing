@@ -2,7 +2,7 @@
 PROGRAM = main
 
 # Kaynak dosyalar
-SRC = types.ml utils.ml machineone.ml machinetwo.ml machinethree.ml main.ml
+SRC = types.ml utils.ml machineone.ml machinetwo.ml main.ml
 
 # Gerekli kütüphaneler
 LIBS = yojson
