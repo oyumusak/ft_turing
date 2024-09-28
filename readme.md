@@ -47,3 +47,9 @@ dune exec ./main.exe path_to_json_file.json input_string
 "alphabet": [ "A", "B", "H", "L", "R", "e", "#", "1", "?", ".", ">", "+" , "="],
 
 "A1?.>B#R B1?1>B#R+?1>B#Re?e>H#L@111+11="
+
+
+states = A B H
+"alphabet": [ "A", "B", "H", "L", "R", "e", "#", "1", "?", ".", ">", "+" , "=", ":","@","&","-"],
+
+"ABH:e1.+=&A1?.>B#RB1?1>B#R-+?1>B#R-e?e>H#L@111+11="
