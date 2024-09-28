@@ -23,17 +23,17 @@ OPTOBJS = $(SRC:.ml=.cmx)
 # OPAM kontrol fonksiyonu
 
 .PHONY: check-tools
+.PHONY: check-tools
 check-tools:
 	@echo "Checking for ocamlfind..."
 	@if ! command -v ocamlfind &> /dev/null; then \
 		echo "ocamlfind is missing. Installing..."; \
-		opam install ocamlfind; \
+		opam install --yes ocamlfind; \
 	else \
 		echo "ocamlfind is already installed."; \
 	fi
 	@echo "Installing yojson..."
-	opam install yojson || echo "yojson installation failed. Continuing without it..."
-
+	opam install --yes yojson || echo "yojson installation failed. Continuing without it..."
 
 
 # OPAM kurulumu kontrol ve yükleme fonksiyonu
