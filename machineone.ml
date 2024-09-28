@@ -227,6 +227,6 @@ let startMachine fileContent input =
   let jsonContent : jsonHeaders = makeRecord jsonContent in
   printHeader jsonContent;
   checkDepends jsonContent input;
-  (*checkAlgo jsonContent;*)
+  (* checkAlgo jsonContent; *)
   let result = startAlgo jsonContent input in
   Array.iter (fun x -> Printf.printf "%c" x) result;
